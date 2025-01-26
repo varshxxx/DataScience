@@ -1,0 +1,32 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+customer_data = pd.read_csv('/content/Customers.csv')
+customer_data['SignupDate'] = pd.to_datetime(customer_data['SignupDate'])
+duplicate_customers = customer_data['CustomerID'].duplicated().sum()
+region_list = customer_data['Region'].unique()
+customers_per_region = customer_data['Region'].value_counts()
+customer_data['SignupYear'] = customer_data['SignupDate'].dt.year
+customers_per_year = customer_data['SignupYear'].value_counts().sort_index()
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 6))
+sns.countplot(ax=axes[0],
+              y='Region',
+              data=customer_data,
+              order=customers_per_region.index,
+              color='steelblue')
+axes[0].set_title('Customer Count by Region')
+axes[0].set_xlabel('Count')
+axes[0].set_ylabel('Region')
+
+sns.barplot(ax=axes[1],
+            x=customers_per_year.index,
+            y=customers_per_year.values,
+            color='skyblue')
+axes[1].set_title('Customer Count by Signup Year')
+axes[1].set_xlabel('Year')
+axes[1].set_ylabel('Count')
+
+plt.tight_layout()
+plt.show()
